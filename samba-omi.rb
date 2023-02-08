@@ -9,21 +9,6 @@ class SambaOmi < Formula
   sha256 "ebb7880d474ffc09d73b5fc77bcbd657f6235910337331a9c24d7f69ca11442b"
   license "GPL-3.0-or-later"
 
-  livecheck do
-    url "https://www.samba.org/samba/download/"
-    regex(/href=.*?samba[._-]v?(\d+(?:\.\d+)+)\.t/i)
-  end
-
-  bottle do
-    sha256 arm64_ventura:  "ae780732fbc32f18ea37295cc73690f34fb98b5fc096e9fcb497eb1b5f517827"
-    sha256 arm64_monterey: "a2a864f496652c20ab8c2cd29f89b0a78e2f66aa1e160e7d4367f0a6437e321c"
-    sha256 arm64_big_sur:  "5702ae2153853898f0878d19d08b5a1d3746a036989c64f1ab242085a418a200"
-    sha256 ventura:        "d983e59c4ebcd5f081b53cb8ada52d04ee6decb38a8956144fc30a582a6aa848"
-    sha256 monterey:       "164ee45cb4ebf7477f5e1f8340bd7e62bae9ecea1a241fd24095e490db20faf7"
-    sha256 big_sur:        "b7c5061522b090260543b019f0a3147ffb1639a07108a9b1d920cd881c458caa"
-    sha256 x86_64_linux:   "ae5884ceb943a05ce280cc15177eb3f3ca1c22ef198a1b21b3712bc2683b59c2"
-  end
-
   depends_on "cmocka" => :build
   depends_on "pkg-config" => :build
   # configure requires python3 binary to be present, even when --disable-python is set.
@@ -90,7 +75,6 @@ class SambaOmi < Formula
            "--without-syslog",
            "--without-utmp",
            "--without-winbind",
-           "--with-shared-modules=!vfs_snapper",
            "--with-system-mitkrb5",
            "--prefix=#{prefix}",
            "--sysconfdir=#{etc}",
