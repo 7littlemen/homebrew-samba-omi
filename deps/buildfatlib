@@ -1,0 +1,60 @@
+#!/bin/bash
+DIR="$PWD"
+
+X86DIR="${DIR}/x86"
+ARM64DIR="${DIR}/arm64"
+FATDIR="${DIR}/fat"
+
+rm -rf "${FATDIR}"
+
+mkdir -p "${FATDIR}"
+
+if [ ! -d "$DIR" ]; then
+	echo "$DIR not exists." > /dev/stderr
+	exit 1
+fi
+
+if [ ! -d "$X86DIR" ]; then
+	echo "$X86DIR not exists." > /dev/stderr
+	exit 1
+fi
+
+if [ ! -d "$ARM64DIR" ]; then
+	echo "$ARM64DIR not exists." > /dev/stderr
+	exit 1
+fi
+
+if [ ! -d "$FATDIR" ]; then
+	echo "$FATDIR not exists." > /dev/stderr
+	exit 1
+fi
+
+echo "Start create fat libraries"
+
+for x86_library in "$X86DIR"/*.dylib
+do
+  filename=$(basename -- "$x86_library")
+  echo "x86 library: $(lipo -info $X86DIR/$filename)"
+  echo "arm64 library: $(lipo -info $ARM64DIR/$filename)"
+  echo "create fat library: "
+  lipo -create "$X86DIR/$filename" "$ARM64DIR/$filename" -output "$FATDIR/$filename"
+done
+
+count=0
+for fat_library in "$FATDIR"/*.dylib
+do
+	lipo -info $fat_library
+	((count=count+1))
+done
+
+echo "End create fat libraries $count"
+
+
+# lipo -create "${ARM64DIR}/dynamic/libavcodec.58.dylib" "${X86DIR}/dynamic/libavcodec.58.dylib" -output "${FATDIR}/dynamic/libavcodec.58.dylib"
+# lipo -create "${ARM64DIR}/dynamic/libavdevice.58.dylib" "${X86DIR}/dynamic/libavdevice.58.dylib" -output "${FATDIR}/dynamic/libavdevice.58.dylib"
+# lipo -create "${ARM64DIR}/dynamic/libavfilter.7.dylib" "${X86DIR}/dynamic/libavfilter.7.dylib" -output "${FATDIR}/dynamic/libavfilter.7.dylib"
+# lipo -create "${ARM64DIR}/dynamic/libavformat.58.dylib" "${X86DIR}/dynamic/libavformat.58.dylib" -output "${FATDIR}/dynamic/libavformat.58.dylib"
+# lipo -create "${ARM64DIR}/dynamic/libavutil.56.dylib" "${X86DIR}/dynamic/libavutil.56.dylib" -output "${FATDIR}/dynamic/libavutil.56.dylib"
+# lipo -create "${ARM64DIR}/dynamic/libpostproc.55.dylib" "${X86DIR}/dynamic/libpostproc.55.dylib" -output "${FATDIR}/dynamic/libpostproc.55.dylib"
+# lipo -create "${ARM64DIR}/dynamic/libswresample.3.dylib" "${X86DIR}/dynamic/libswresample.3.dylib" -output "${FATDIR}/dynamic/libswresample.3.dylib"
+# lipo -create "${ARM64DIR}/dynamic/libswscale.5.dylib" "${X86DIR}/dynamic/libswscale.5.dylib" -output "${FATDIR}/dynamic/libswscale.5.dylib"
